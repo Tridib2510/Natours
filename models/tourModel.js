@@ -84,4 +84,4 @@ tourSchema.post(/^find/,function(next){
     next()
     })
 const Tour=mongoose.model('Tour',tourSchema)
-module.exports=Tour 
+module.exports=Tour //hey man
