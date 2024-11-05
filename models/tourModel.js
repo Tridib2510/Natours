@@ -5,7 +5,7 @@ const tourSchema=new mongoose.Schema({
         recquired:[true,"A tour must have a name"],
         unique:true,
         trim:true,
-        maxlength:[40,'The length should greater than equal 40'],
+        maxlength:[40,'The length should greater than equal 40'],//new code
         minlength:[3,'The Name should be at least greater or equal to 3']
     },
     duration:{
