@@ -2,15 +2,16 @@
 const Tour=require('./models/tourModel')
 const APIFeatures=require('./utils/apiFeatures')
 
-exports.aliasTopTours=(req,res,next)=>{
-    req.query.limit=5
-    req.query.sort='-ratingsAverage,price'
-    req.query.fields='name,price,ratingsAverage,summary,difficulty'
-    next()
+// exports.aliasTopTours=(req,res,next)=>{
+//     req.query.limit=5
+//     req.query.sort='-ratingsAverage,price'
+//     req.query.fields='name,price,ratingsAverage,summary,difficulty'
+//     next()
 
-}
+// }
 
 exports.getAllTour= async (req,res)=>{
+    const features=new APIFeatures(Tour.find(),req.query).filter().sort().limitField().paginate();
     try{
         //API Features is a class that we have importd containing filter,sort etc
         //EXECUTE
@@ -19,6 +20,7 @@ exports.getAllTour= async (req,res)=>{
  //Then each of the above 4 methods we use to manipulate the query 
  //And by the end we simply await for the query so that it can come with all the documents we have selected
         const tour=await features.query
+        
     res.status(200).json({
         status:"success",        
         data:{
@@ -26,9 +28,11 @@ exports.getAllTour= async (req,res)=>{
         }
     })
 }catch(err){
+  
     res.status(404).json({
         status:'fail',
         message:err
+        
     })
 }
 }

@@ -73,18 +73,18 @@ const tourSchema=new mongoose.Schema({
 //     return this.duration/7
 // })
 //Document middle ware .It runs before the .save() and .create()
-tourSchema.pre(/^find/,function(next){
-//Here this points to the currently processed document
+// tourSchema.pre(/^find/,function(next){
+// //Here this points to the currently processed document
 
-this.start=Date.now();//we use this to set a start property on the query object
-next()
-})
-tourSchema.post(/^find/,function(next){
-    //Here this points to the currently processed document
+// this.start=Date.now();//we use this to set a start property on the query object
+// next()
+// })
+// tourSchema.post(/^find/,function(next){
+//     //Here this points to the currently processed document
     
     
-    console.log("Duration is "+(Date.now()-this.start))
-    next()
-    })
+//     console.log("Duration is "+(Date.now()-this.start))
+//     next()
+//     })
 const Tour=mongoose.model('Tour',tourSchema)
 module.exports=Tour //hey man
