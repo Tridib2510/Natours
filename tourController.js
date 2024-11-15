@@ -41,13 +41,13 @@ exports.getTour=catchAsync(async (req,res,next)=>{
     
     const tour=await Tour.findById(req.params.id)
    
-        // if(tour==null){
+        if(!tour){
           
-        //  return next(new AppError('Not found with that ID',404))
-        //  //we use return as we want to return the function immediately and
-        //  //not move on to the next line which would try to give 2 responses
-        //  //leading to error
-        // }
+         return next(new AppError('Not found with that ID',404))
+         //we use return as we want to return the function immediately and
+         //not move on to the next line which would try to give 2 responses
+         //leading to error
+        }
     console.log(req.params)
     res.status(200).json({
         status:"success",
