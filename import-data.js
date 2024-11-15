@@ -14,6 +14,7 @@ mongoose.connect(DB,{
     useNewUrlParser:true,
     useCreateIndex:true,
     useFindAndModify:false
+   
 }).then(con=>{
     console.log('connection successfull')
 }).catch(err=>{
