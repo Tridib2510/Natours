@@ -10,7 +10,7 @@ exports.aliasTopTours=(req,res,next)=>{
 
 }
 
-exports.getAllTour= catchAsync(async (req,res,next)=>{
+exports.getAllTour=(async (req,res,next)=>{
     const features=new APIFeatures(Tour.find(),req.query).filter().sort().limitField().paginate();
     
         //API Features is a class that we have importd containing filter,sort etc
@@ -36,11 +36,18 @@ exports.deleteTour=catchAsync(async (req,res,next)=>{
    
   
 })
-exports.getTour=catchAsync(async (req,res)=>{
+exports.getTour=catchAsync(async (req,res,next)=>{
     const id=req.params.id*1
- 
+    
     const tour=await Tour.findById(req.params.id)
-        
+   
+        // if(tour==null){
+          
+        //  return next(new AppError('Not found with that ID',404))
+        //  //we use return as we want to return the function immediately and
+        //  //not move on to the next line which would try to give 2 responses
+        //  //leading to error
+        // }
     console.log(req.params)
     res.status(200).json({
         status:"success",
@@ -51,7 +58,8 @@ exports.getTour=catchAsync(async (req,res)=>{
     
    
 })
-
+//Here the error comes up only when the ID specified donot matches the mongodb
+//ID type .If it matches then it show tour=null
 exports.updateTour=catchAsync(async (req,res,next)=>{
     // if(req.params.id*1>tours.length){
     //     return res.status(404).json({
