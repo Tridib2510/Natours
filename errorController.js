@@ -1,3 +1,9 @@
+const AppError=require('./utils/appError')
+//Error handling for cast errors
+const handleCastErrorDB=err=>{
+    const message=`Invalid ${err.path}:${err.value}`
+    return new AppError(message,400)
+}
 //Error handling for development
 const sendErrorDev=(err,res)=>{
     res.status(err.statusCode).json({
@@ -38,11 +44,19 @@ module.exports=((err,req,res,next)=>{
     err.statusCode=err.statusCode||500
     err.status=err.status||'error'
     //Here we use 2different error handling for 2 different enviorments
-    if(process.env.NODE_ENV='development'){
+    if(process.env.NODE_ENV==='development'){
     sendErrorDev(err,res)
     }
-   else if(process.env.NODE_ENV='production'){
-    sendErrorProd(err,res)
+   else if(process.env.NODE_ENV==='production'){
+    let error={...err}//It is not a good practice to override the 
+    //argument of a function so we create a hard copy of error object  
+    //using destructuring
+    if(err.name==='CastError')error=handleCastErrorDB(error)   
+    //We will pass the error that mongoose created into our function
+    //This would create a new error created with our app error class
+    //And that error will be mark as operational
+
+    sendErrorProd(error,res)
    }
 })
 //We define the status & the status code on the error object 
