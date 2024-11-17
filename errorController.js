@@ -15,6 +15,19 @@ const handleDuplicateFieldsDB=err=>{
     //For extracting this we will use a regular expression(Just search google)
 
 }
+//Error handling for handling validation errors
+const handleValidationErrorDB=err=>{
+    const errors=Object.value(err.errors).map(el=>el.message)
+    //Now to create 1 big string due to all the string from all the errors
+    //we have to loop over all the message and extract a new array 
+    //Here error is a part of err(Error of mongoose in this case) which is a object containing the error messages
+    //In javascript we use Object.values to loop over an object and in each
+    //iteration we will simply return the error message
+    const message=`Invalid input data+${errors.join('. ')}`// we use join to
+    //seperate the 3 strings to make them more readible
+    return new AppError(message,400)
+    
+}
 //Error handling for development
 const sendErrorDev=(err,res)=>{
     res.status(err.statusCode).json({
@@ -66,9 +79,11 @@ module.exports=((err,req,res,next)=>{
     //We will pass the error that mongoose created into our function
     //This would create a new error created with our app error class
     //And that error will be mark as operational
-     if(error.code==11000)error=handleDuplicateFieldsDB(error)
+     if(error.code===11000)error=handleDuplicateFieldsDB(error)
      //handleDuplicateFieldsDB handles error when the new field name matches
      //that of an already preexisting field
+     if(error.name==='ValidationError')error=handleValidationErrorDB(error)
+     //ValidationError just like CastError is an error created by mongoose
     sendErrorProd(error,res)
    }
 })
