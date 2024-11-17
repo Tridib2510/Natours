@@ -15,10 +15,11 @@ mongoose.connect(DB,{
     useCreateIndex:true,
     useFindAndModify:false
    
-}).then(con=>{
+})
+.then(con=>{
     console.log('connection successfull')
 }).catch(err=>{
-    console.log('error')
+    console.log('Error')
 })
 //READING THE FILE
 const tours=JSON.parse(fs.readFileSync('tours-simple.json','utf-8'))
