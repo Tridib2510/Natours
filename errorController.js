@@ -2,7 +2,18 @@ const AppError=require('./utils/appError')
 //Error handling for cast errors
 const handleCastErrorDB=err=>{
     const message=`Invalid ${err.path}:${err.value}`
+    //Here err.path==InvalidId and err.value==id
     return new AppError(message,400)
+}
+//Error handling for duplicate elements
+const handleDuplicateFieldsDB=err=>{
+    const value=err.errmsg.match(/([""'])(\\?.)*?\1/)[0] //It is the name of the property(This is created by mongoose)
+    //This gives us and array and we only the first element of that array
+    const message=`Duplicate field value ${value}, Please use another value`
+    return new AppError(message,404)
+    // x will contains the duplicate value
+    //For extracting this we will use a regular expression(Just search google)
+
 }
 //Error handling for development
 const sendErrorDev=(err,res)=>{
@@ -51,11 +62,13 @@ module.exports=((err,req,res,next)=>{
     let error={...err}//It is not a good practice to override the 
     //argument of a function so we create a hard copy of error object  
     //using destructuring
-    if(err.name==='CastError')error=handleCastErrorDB(error)   
+    if(err.name==='CastError')error=handleCastErrorDB(error)//error gets overridden 
     //We will pass the error that mongoose created into our function
     //This would create a new error created with our app error class
     //And that error will be mark as operational
-
+     if(error.code==11000)error=handleDuplicateFieldsDB(error)
+     //handleDuplicateFieldsDB handles error when the new field name matches
+     //that of an already preexisting field
     sendErrorProd(error,res)
    }
 })
