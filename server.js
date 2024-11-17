@@ -31,14 +31,15 @@ process.on('unhandledRejection',err=>{//unhandledRejection is the event
     server.close(()=>{
         process.exit(1)
     })
+    
     //Closes the server and run the call back function
     //online inside of which we shut down the server
    //So by doing server.close() we are basically giving server time to handle
    //all pending requests at that time and only then the server is killed
    //In real world scenerio we should do it like this
 
-    //process.exit(1)//exit(0) stands for success and exit(1) stands for
-                   //uncalled exception
+    //process.exit(1)
+    //exit(0) stands for success and exit(1) stands for uncalled exception
    //process.exit(1) is a very abrupt way of ending our application
    //It will just immediately abort all the requests that are running or pending
    //We need to shut down gracefully
