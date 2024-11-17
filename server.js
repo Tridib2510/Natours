@@ -1,5 +1,24 @@
 const mongoose=require('mongoose')
 const dotenv=require('dotenv')
+
+process.on('uncaughtException',err=>{
+    console.log(`UNCAUGHT EXCEPTION`)
+    console.log(err.name,err.message)///Log the error to our console so that it shows up in the logs in our servers
+    
+    process.exit(1) //We don't need the server.close() as these erros will not happend asynchonously
+                    //So it has nothing to do with our sever
+
+    //When there is a uncaught Exception we really need to crash our application
+    //because after uncaughtException the entire node process is in a so called
+    //unclean state.
+    //So the process needs to be terminated and restarted
+
+    //In production we need to have a tool in place which starts the application
+    //after restarting.Some hosting services already does that
+   
+})
+//'uncaughtException' event should be before any other code as any mal code
+//above it will not be managed by this
 dotenv.config({path:"./config.env"})
 const DB=process.env.DATABASE.replace('<PASSWORD>',process.env.DATABASE_PASSWORD)
 console.log(DB)
@@ -54,3 +73,5 @@ process.on('unhandledRejection',err=>{//unhandledRejection is the event
 //So we are listining to this 'unhandled rejection event' which allows us
 //to handle all the errors occuring in the asynchoronous code which were
 //not prevously hanlded
+
+
