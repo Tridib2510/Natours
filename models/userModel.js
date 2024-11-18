@@ -51,7 +51,7 @@ userSchema.pre('save',async function(next){
   //This will add random string to our password so that 2 equal password do not generate the same hash
 
   //Hash Password with cost 4
-  this.password=await bcypt.hash(this.password,4) //The second parameter is a cost parameter which is the measure of how CPU intensive this operation will be. And the defult value of this is 10
+  this.password=await bycrypt.hash(this.password,4) //The second parameter is a cost parameter which is the measure of how CPU intensive this operation will be. And the defult value of this is 10
   //hash is an asynchronous function which return a promise which we need to await
 
   //Now we delete the confirm password because at this point in time we only have the real password hash
