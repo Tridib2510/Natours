@@ -60,7 +60,7 @@ userSchema.pre('save',async function(next){
   this.passwordConfirm=undefined
   //We can delete thsi field inspite of a validator being required is because
   //This validation is only for input 
-  next()
+  next()//
 
 })
 //We use a document middleware and user a pre hook on save
