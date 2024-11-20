@@ -85,6 +85,12 @@ return bcrypt.compare(candidatePassword,userPassword)//compares candidatePasswor
      //password data to the client.
      //To fix it in the schemal in the password section we give
      //select:false 
+
+     
+      //To compare the password that the user has provided and the encrypted
+    //password stored in the database we use the Bcrypt package
+    //So we encrypt the login password and compare with the encrypted one
+
 const User=mongoose.model('User',userSchema)
 
 module.exports=User

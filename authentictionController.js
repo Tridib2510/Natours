@@ -59,10 +59,7 @@ exports.login=catchAsync(async (req,res,next)=>{
     //Out put of user will not contain the password since we have use select:false in the schema so we need to 
     //explicity select it as well
 
-    //To compare the password that the user has provided and the encrypted
-    //password stored in the database we use the Bcrypt package
-    //So we encrypt the login password and compare with the encrypted one
-
+   
      //const correct=await user.correctPassword(password,user.password)
      //if user doesn't exist then this correct canot not run ie user.password will not be available
      if(!user||!await user.correctPassword(password,user.password)){
