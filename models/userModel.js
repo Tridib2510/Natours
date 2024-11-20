@@ -22,7 +22,8 @@ const userSchema=new mongoose.Schema({
   password:{
     type:String,
     required:[true,'Please provide a password'],
-    minlength:8
+    minlength:8,
+    select:false//It will not show up any of the output
     
   },
   passwordConfirm:{
@@ -69,6 +70,21 @@ userSchema.pre('save',async function(next){
 //is going to happen between the moment we receive the date
 //and the moment it is actually presisted to the database
 //Between getting the data and saving it the pre save middle ware runs
+
+//Function which checks if the given password is same as that one stored in 
+//the document
+//We use a instance method:It is a method which is available on all documents of a 
+//certain collection 
+userSchema.methods.correctPassword=function(candidatePassword,userPassword){
+  //We pass the user password since use to the select option in the schema 
+//this.password is not available
+return bcrypt.compare(candidatePassword,userPassword)//compares candidatePassword and userPassword
+}
+
+     //In the user output we get the encrypted password output.It is not really a good practice to leak the 
+     //password data to the client.
+     //To fix it in the schemal in the password section we give
+     //select:false 
 const User=mongoose.model('User',userSchema)
 
 module.exports=User

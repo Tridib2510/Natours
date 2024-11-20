@@ -8,7 +8,7 @@ router.post('/signup',authController.signup)
 //But in some special cases It is okay to create other end points that does
 //not follow the REST phylosophy
 //For signUp we only need the POST http method
-
+router.post('/login',authController.login)
 router
 .route('/')
 .get(userController.getAllUsers)

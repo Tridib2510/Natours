@@ -1,14 +1,17 @@
+const catchAsync = require("./utils/catchAsync")
+const User=require('./models/userModel')
 exports.checkBody=(req,res,next)=>{
     console.log("I am Tridib")
     next()
 }
-exports.getAllUsers=(req,res)=>{
+exports.getAllUsers=catchAsync(async(req,res)=>{
+    const user=await User.find()
     res.status(500).json({
         status:'error',
         message:'This route is not yet defined'
     })
 
-}
+})
 exports.getUser=(req,res)=>{
     res.status(500).json({
         status:'error',

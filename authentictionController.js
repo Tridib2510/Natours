@@ -1,7 +1,14 @@
 const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const catchAsync=require('./utils/catchAsync')
+const AppError=require('./utils/appError')
 
+//Function for token
+const signToken=id=>{
+    return jwt.sign({id:id},process.env.JWT_SECRET,{
+        expiresIn:process.env.JWT_EXPIRES_IN//Expiration Date
+       })
+}
 exports.signup=catchAsync(async (req,res,next)=>{ //We wrap this function in catchAsynch so that we do not need to write catch block everytime
     const newUser=await User.create({
         name:req.body.name,
@@ -18,10 +25,13 @@ exports.signup=catchAsync(async (req,res,next)=>{ //We wrap this function in cat
    
    //Usually when we signUp for any web application we automatically gets logged in
    //All we need to do is sign a JSON Web token and then send it back to the user
-   const token=jwt.sign({id:newUser._id},process.env.JWT_SECRET,{
-    expiresIn:process.env.JWT_EXPIRES_IN//Expiration Date
-   })
-   //For the best encryption secretOrPrivateKey must be at least 32 characters long
+
+   //    const token=jwt.sign({id:newUser._id},process.env.JWT_SECRET,{
+//     expiresIn:process.env.JWT_EXPIRES_IN//Expiration Date
+//    })
+   
+const token=signToken(newUser._id)
+//For the best encryption secretOrPrivateKey must be at least 32 characters long
    //we can pass in some options in the third parameter.It mentions when the JWT expires
    //After the specified time JSON Web token would no longer be valid 
    //So this is for logging out the user after a certain period of time 
@@ -36,4 +46,32 @@ exports.signup=catchAsync(async (req,res,next)=>{ //We wrap this function in cat
         user:newUser
     }
    })
+})
+exports.login=catchAsync(async (req,res,next)=>{
+    const {email,password}=req.body
+    //1)Check if email and password exists
+    if(!email||!password){
+      return next(new AppError('Please provide email and password',404))
+      // we are using return as after using next middleware we make sure that the function finishes right away
+    }
+    //2)Check if user and password is correct
+     const user=await User.findOne({email:email}).select('+password')
+    //Out put of user will not contain the password since we have use select:false in the schema so we need to 
+    //explicity select it as well
+
+    //To compare the password that the user has provided and the encrypted
+    //password stored in the database we use the Bcrypt package
+    //So we encrypt the login password and compare with the encrypted one
+
+     //const correct=await user.correctPassword(password,user.password)
+     //if user doesn't exist then this correct canot not run ie user.password will not be available
+     if(!user||!await user.correctPassword(password,user.password)){
+        return next(new AppError('Incorrect email or password',401))
+     }
+    //3)If everything is okay,send token to client
+    const token=signToken(user._id)
+    res.status(200).json({
+        status:"success",
+        token
+    })
 })
