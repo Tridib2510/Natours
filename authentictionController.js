@@ -72,3 +72,22 @@ exports.login=catchAsync(async (req,res,next)=>{
         token
     })
 })
+exports.protect=catchAsync(async(req,res,next)=>{
+//1)Getting token and check if it's available
+ let token
+ if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+    token=req.header.authorization.split(' ')[1]
+ }
+ console.log(token)
+ if(!token){
+   
+    return next(new AppError('You are not logged in!. Please log in to get acess',401))//401->unauthoriZed
+ }
+//Common practice is to send a token with the http header
+
+//2)We need to validate the token(Verification token)
+//3)Check if user still exits
+//4)Check if user changed password after the JWT was issued
+
+    next()
+})

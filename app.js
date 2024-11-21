@@ -6,7 +6,11 @@ const globalErrorHandler=require('./errorController')
 app.use(express.static(`${__dirname}`))
 const tourRouter=require('./tourRoutes')
 const userRouter=require('./userRoutes')
-
+app.use((req,res,next)=>{
+   //console.log(req.headers)//This is how we get access to http headers in express
+  //We can send the headers using postman
+   next()
+})
 app.use(express.json()) 
 app.use('/api/v1/tours',tourRouter)
 app.use('/api/v1/users',userRouter)
@@ -35,5 +39,5 @@ app.all('*',(req,res,next)=>{
 app.use(globalErrorHandler)
 
 module.exports=app
-//
+
 
