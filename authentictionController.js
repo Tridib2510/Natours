@@ -1,3 +1,5 @@
+const {promisify}=require('util')//Since we are going to only use this method we can just do it easier
+
 const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const catchAsync=require('./utils/catchAsync')
@@ -75,10 +77,10 @@ exports.login=catchAsync(async (req,res,next)=>{
 exports.protect=catchAsync(async(req,res,next)=>{
 //1)Getting token and check if it's available
  let token
- if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+ if(req.header.authorization && req.header.authorization.startsWith('Bearer')){
     token=req.header.authorization.split(' ')[1]
  }
- console.log(token)
+ 
  if(!token){
    
     return next(new AppError('You are not logged in!. Please log in to get acess',401))//401->unauthoriZed
@@ -86,6 +88,32 @@ exports.protect=catchAsync(async(req,res,next)=>{
 //Common practice is to send a token with the http header
 
 //2)We need to validate the token(Verification token)
+
+//In this step we verify if someone has verified the data or if the token has
+//already expired
+const docoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
+    //The call back runs as soon as the vefification has been completed
+
+//algo reads the payload
+//Now we have been working with promises all the time and we do not want
+//to break that pattern.So we are going to PROMISIFY this function so that 
+//it returns a promise then we can use async await
+
+//Node actually has a build in promisyfy function.All we need to do to use it
+//is to require the build in util module
+
+//It has become a function that we can call which returns a promise
+
+//We store the value of the promise in a variable and that resolved value of the promise
+//will actaully be the decoded data
+//So the decoded payload from the webtoken
+
+//If we try to manipulate the web token then we get 
+// an error named jsonWebTokenError
+
+//If the token is expired we will get 
+//and error named TokenExpiredError
+
 //3)Check if user still exits
 //4)Check if user changed password after the JWT was issued
 
