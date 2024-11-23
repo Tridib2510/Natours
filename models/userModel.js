@@ -36,7 +36,8 @@ const userSchema=new mongoose.Schema({
    },
    message:"Passwords are not the same"//Will be displayed when doesn't match password
   
-  }
+  },
+  passwordChangedAt:Date//This property will always be changed when someone changes his password
 })
 userSchema.pre('save',async function(next){
   //It should only work for signup or updating the password
@@ -90,7 +91,29 @@ return bcrypt.compare(candidatePassword,userPassword)//compares candidatePasswor
       //To compare the password that the user has provided and the encrypted
     //password stored in the database we use the Bcrypt package
     //So we encrypt the login password and compare with the encrypted one
+userSchema.methods.changedPasswordAfter=function(JWTTimestamp){
+  //We have to create a field in our schema for the data when the password has been changed
+  //and if the document has that passwordchangeAt propery only then we want to acutually do the comparison
+  if(this.passwordChangedAt){
+    //We need convert passwordChangedAt (which is not in milisecond format like JWTTimestamp format)
+    //to a the passworwordChangedAt format
+    const changedTimestamp=parseInt(this.passwordChangedAt.getTime()/100,10)//We divide it by thousands as it is thousands times more than JWTTimestamp.10 is a base .So our no is a base 10 number
+    // console.log(this.passwordChangedAt,JWTTimestamp)
+    console.log(changedTimestamp,JWTTimestamp)
+    return JWTTimestamp<changedTimestamp//ex->Suppose the token was issued at time 100 and we changed the password at time 200 
+    //100<200 this gives us true which is returned
+    //Now lets's say that the password was changed at 200 but then only after that we isseed the token so 200<issuedTime so we return false
 
+  }
+//We will return false which means that the user has not changed his 
+// password after the token was issued
+
+//false means not changed 
+//not changed means that the day or the time the token was issued is less than the TimeStamp
+return false
+
+}
+//JWTTimestamp specify when the JWT was issued
 const User=mongoose.model('User',userSchema)
 
 module.exports=User

@@ -91,7 +91,7 @@ exports.protect=catchAsync(async(req,res,next)=>{
 
 //In this step we verify if someone has verified the data or if the token has
 //already expired
-const docoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
+const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
     //The call back runs as soon as the vefification has been completed
 
 //algo reads the payload
@@ -114,8 +114,41 @@ const docoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
 //If the token is expired we will get 
 //and error named TokenExpiredError
 
-//3)Check if user still exits
-//4)Check if user changed password after the JWT was issued
 
-    next()
+//Most tutorial does not implement the last 2 steps
+//What if the user actually change his password after the token has been issued?
+//Imagine someone stole the JSON web token from the user but inorder to 
+//protect against that the user changes his password .So the token that was 
+//issued before the password change should no longet be accepted anymore
+
+//3)Check if user still exits
+const freshUser=await User.findById(decode)
+//We can be 100 percent sure that the id is correct since
+//we have made it until this point in the code
+//and hence the verification process was successfull
+//Otherwise line 94 would have produced an error which would have stop the program 
+//from continuing
+
+//So the verification process is what makes all of this work
+
+//Check if there is a freshUser
+
+if(!freshUser){
+    return next(new AppError('The user no longer exists',401))
+    
+
+}
+
+
+//4)Check if user changed password after the JWT was issued
+//We will create another Instance method which will be available on all
+//the documents 
+
+freshUser.changedPasswordAfter(decoded.iat)//iat->issued At
+if(!freshUser.changedPasswordAfter(decoded.iat)){
+    return next(new AppError('User recently changed password Please log in',401))
+}
+//So if the code can make it all the way to the end then nonly next is executed
+   //next() gives acess to the protected route 
+next()
 })
