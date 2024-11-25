@@ -150,5 +150,8 @@ if(!freshUser.changedPasswordAfter(decoded.iat)){
 }
 //So if the code can make it all the way to the end then nonly next is executed
    //next() gives acess to the protected route 
+   req.user=freshUser
+   //We are putting the entire user data on the request
+   //This might be useful some time in the future
 next()
 })
