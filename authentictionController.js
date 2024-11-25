@@ -152,7 +152,7 @@ if(!freshUser.changedPasswordAfter(decoded.iat)){
    //next() gives acess to the protected route 
    req.user=freshUser
    //We are putting the entire user data on the request
-   //This might be useful some time in the future
+   //This will be useful some time in the future
 next()
 })
 //Creating authorization Controller
