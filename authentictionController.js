@@ -155,3 +155,21 @@ if(!freshUser.changedPasswordAfter(decoded.iat)){
    //This might be useful some time in the future
 next()
 })
+//Creating authorization Controller
+exports.restrictTo=(...roles)=>{//Create an array of all the parameters that were specied
+  return (req,res,next)=>{
+  //We will give a user acess to a certain route when the user role is inside
+  //of this roles array
+if(!roles.includes(req.user.roles)){//The protect middleware runs before this middleware.So the currentUser is on the req Object as specified in line 153.So we can use that here
+  return next(new AppError('You do not have permission to perform this action',403))//403->StausCode for non authorization
+}
+  next()
+  }//This is the middleware function that will get acess to the roles parameter
+
+
+}
+//Now usually we can not pass arguments into a middleware function.But in this case
+//we really want to/
+//So we create a wrapper function that return the middleware function that we actually want to create
+
+

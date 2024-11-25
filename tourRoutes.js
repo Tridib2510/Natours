@@ -17,5 +17,13 @@ router
 .route('/:id')
 .get(tourController.getTour)
 .patch(tourController.updateTour)
+.delete(authController.protect,authController.restrictTo('admin','lead-guide'),tourController.deleteTour)
+//First we need to check if the user is actaully logged in 
+//So if an administrator is actually trying to delete a tour 
+//We need to check if he is actually logged in
 
+//.restrictTo() is the function in which we are going to pass some user
+//roles we authorize to interect with the resource(For this deleting a tour)
+
+//Here the admin and lead-guide are the only ones who are authorized to delete the tour
 module.exports=router

@@ -18,6 +18,12 @@ const userSchema=new mongoose.Schema({
     //#Node:Whenever we need a validator just check the documents 
     //to find a function instead of making our own function
   },
+  role:{
+   type:String,
+   enum:['user','guide','lead-guide','admin'],//We use the enum validator so that only certain types of roles are specified
+   //The user roles we are using will vary for different application 
+   default:'user'//By default only this user will be created
+  },
   photo:String,
   password:{
     type:String,
