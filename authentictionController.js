@@ -172,4 +172,29 @@ if(!roles.includes(req.user.roles)){//The protect middleware runs before this mi
 //we really want to/
 //So we create a wrapper function that return the middleware function that we actually want to create
 
+exports.forgotPassword=catchAsync(async (req,res,next)=>{
+//1)Get user based on Posted email
+const user=await User.findOne({email:req.body.email})
+if(!user){
+    return next(new AppError('There is no user with that email address',404))
+}
+//2)Generate the random reset token
+//Since we need to write quite a bit of code for this step. We create an instance method to make our code more readeable
+const resetToken=user.createPasswordResetToken()
+//In the instance fountion we just modified the data and did not actually save the document
 
+//await user.save()
+//If we just run it like this then it would return and error withe message
+//saying "Please provide email and password"
+//This happend because we are trying to save the document but we donot specify
+//all of the madatory data(so the fields we have marked as recquired
+
+//So all we need to do is actually pass a special option into this save method
+await user.save({validateBeforeSave:false})//This option deactivates all the validators that we specify on our schema
+
+
+//3)send it to the user email
+})
+exports.resetPassword=(req,res,next)=>{
+
+}

@@ -1,3 +1,4 @@
+const crypto=require('crypto')
 const mongoose=require('mongoose')
 const validator=require('validator')
 const bycrypt=require('bcryptjs')
@@ -41,9 +42,12 @@ const userSchema=new mongoose.Schema({
       return el===this.password
    },
    message:"Passwords are not the same"//Will be displayed when doesn't match password
-  
+   
   },
-  passwordChangedAt:Date//This property will always be changed when someone changes his password
+  passwordChangedAt:Date,//This property will always be changed when someone changes his password
+  passwordResetToken:String,
+  passwordResetExpires:Date//This token would expire after a certail period for security measure
+
 })
 userSchema.pre('save',async function(next){
   //It should only work for signup or updating the password
@@ -120,6 +124,46 @@ return false
 
 }
 //JWTTimestamp specify when the JWT was issued
+
+//Instance method for createPasswordResetToken for generating reset token
+userSchema.methods.createPasswordResetToken=function(){
+  //The password resetToken should basically be a random string 
+  //but at the same time it does not need to be as criptographically strong 
+  //So we use the random byte function from the random crypto module(Build in node module.So no need to install)
+
+  //Generating our token
+  const resetToken=crypto.randomBytes(32).toString('hex')//We are converting this into a hexadecimal string for better securtiy
+  //The token is basically what we are going to send to the user
+  //So it is a reset password really which the user can use to create a real new password 
+  //And only the user will have acess to this token
+
+  //Since it is actaully a passoword. So if a hacker can get acess to our database .
+  //This would allow the hacker to gain acess to the account by setting new password
+  //So if we just store this reset token in our database .Then if some attacker gain acess to our database
+  //They can use that token to create a new password instead of you doing it .So they can activly control you account
+  //So just like a password we should never store a plain reset token in our database
+  //So we need to encrypt it
+
+  this.passwordResetToken=crypto.createHash('sha256').update(resetToken).digest('hex')
+  //We create has with this 'sha256' algo .Then  we need to say update and then the varaible
+  //where the token is stored(Whatever string we want to encrypt basically)
+  //And then we need to say digest then store it as a hexadecimal
+
+  //We save this reset token in a new field in our database scehema.We need 
+  //to store it in the database so that we can compare it with the token that
+  //the user provide
+  
+
+
+  this.passwordResetExpires=Date.now()+10*60*1000//(10*60*1000) is the added 10 minutes for which the token would work in milliseconds
+
+  return resetToken//We return the plain text token which we are going to send through the email
+
+  //Note:We only save sensitive data in encrypted form and then we compare 
+  //     with the encrypted version in our database
+
+  
+}
 const User=mongoose.model('User',userSchema)
 
 module.exports=User

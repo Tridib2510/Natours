@@ -9,6 +9,10 @@ router.post('/signup',authController.signup)
 //not follow the REST phylosophy
 //For signUp we only need the POST http method
 router.post('/login',authController.login)
+//It would only receive the email address
+router.post('/forgotPassword',authController.forgotPassword)
+//It would receive the token as well as the new password
+router.post('/resetPassword',authController.resetPassword)
 router
 .route('/')
 .get(userController.getAllUsers)
