@@ -76,9 +76,12 @@ exports.login=catchAsync(async (req,res,next)=>{
 })
 exports.protect=catchAsync(async(req,res,next)=>{
 //1)Getting token and check if it's available
+//console.log(req.headers)
  let token
- if(req.header.authorization && req.header.authorization.startsWith('Bearer')){
-    token=req.header.authorization.split(' ')[1]
+ if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+    console.log(req.headers)
+    token=req.headers.authorization.split(' ')[1]
+   // console.log(token)
  }
  
  if(!token){
@@ -122,7 +125,7 @@ const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
 //issued before the password change should no longet be accepted anymore
 
 //3)Check if user still exits
-const freshUser=await User.findById(decode)
+const freshUser=await User.findById(decoded)
 //We can be 100 percent sure that the id is correct since
 //we have made it until this point in the code
 //and hence the verification process was successfull

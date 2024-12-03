@@ -89,7 +89,7 @@ userSchema.pre('save',async function(next){
 userSchema.methods.correctPassword=function(candidatePassword,userPassword){
   //We pass the user password since use to the select option in the schema 
 //this.password is not available
-return bcrypt.compare(candidatePassword,userPassword)//compares candidatePassword and userPassword
+return bycrypt.compare(candidatePassword,userPassword)//compares candidatePassword and userPassword
 }
 
      //In the user output we get the encrypted password output.It is not really a good practice to leak the 
