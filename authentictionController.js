@@ -1,4 +1,4 @@
-const {promisify}=require('util')//Since we are going to only use this method we can just do it easier
+const {promisify}=require('util')//Since we are only going to use the promisify method from this
 
 const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
@@ -16,7 +16,8 @@ exports.signup=catchAsync(async (req,res,next)=>{ //We wrap this function in cat
         name:req.body.name,
         email:req.body.email,
         password:req.body.password,
-        passwordConfirm:req.body.passwordConfirm
+        passwordConfirm:req.body.passwordConfirm,
+        passwordChangedAt:req.body.passwordChangedAt
     })
     //Withe the modified new code we only allow the data that we actually need to be put in the new user
     //So just the name,email,passoword,passwordConfirm
@@ -81,7 +82,7 @@ exports.protect=catchAsync(async(req,res,next)=>{
  if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
     console.log(req.headers)
     token=req.headers.authorization.split(' ')[1]
-   // console.log(token)
+    //console.log(token)
  }
  
  if(!token){
@@ -94,9 +95,10 @@ exports.protect=catchAsync(async(req,res,next)=>{
 
 //In this step we verify if someone has verified the data or if the token has
 //already expired
+
 const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
     //The call back runs as soon as the vefification has been completed
-
+//console.log(decoded)
 //algo reads the payload
 //Now we have been working with promises all the time and we do not want
 //to break that pattern.So we are going to PROMISIFY this function so that 
@@ -108,8 +110,10 @@ const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
 //It has become a function that we can call which returns a promise
 
 //We store the value of the promise in a variable and that resolved value of the promise
-//will actaully be the decoded data
+//will actaully be the decoded data of the pay load
 //So the decoded payload from the webtoken
+
+//The decoded variable contain the id,creating date and the expiration date of the token
 
 //If we try to manipulate the web token then we get 
 // an error named jsonWebTokenError
@@ -125,7 +129,7 @@ const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
 //issued before the password change should no longet be accepted anymore
 
 //3)Check if user still exits
-const freshUser=await User.findById(decoded)
+const freshUser=await User.findById(decoded.id)
 //We can be 100 percent sure that the id is correct since
 //we have made it until this point in the code
 //and hence the verification process was successfull
@@ -137,7 +141,7 @@ const freshUser=await User.findById(decoded)
 //Check if there is a freshUser
 
 if(!freshUser){
-    return next(new AppError('The user no longer exists',401))
+   return next(new AppError('The user no longer exists',401))
     
 
 }
@@ -147,7 +151,7 @@ if(!freshUser){
 //We will create another Instance method which will be available on all
 //the documents 
 
-freshUser.changedPasswordAfter(decoded.iat)//iat->issued At
+//freshUser.changedPasswordAfter(decoded.iat)//iat->issued At
 if(!freshUser.changedPasswordAfter(decoded.iat)){
     return next(new AppError('User recently changed password Please log in',401))
 }

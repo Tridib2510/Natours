@@ -2,6 +2,7 @@ const crypto=require('crypto')
 const mongoose=require('mongoose')
 const validator=require('validator')
 const bycrypt=require('bcryptjs')
+//const Date=require('date')
 const userSchema=new mongoose.Schema({
   name:{
     type:String,
@@ -102,6 +103,7 @@ return bycrypt.compare(candidatePassword,userPassword)//compares candidatePasswo
     //password stored in the database we use the Bcrypt package
     //So we encrypt the login password and compare with the encrypted one
 userSchema.methods.changedPasswordAfter=function(JWTTimestamp){
+  console.log(this.passwordChangedAt,JWTTimestamp)
   //We have to create a field in our schema for the data when the password has been changed
   //and if the document has that passwordchangeAt propery only then we want to acutually do the comparison
   if(this.passwordChangedAt){

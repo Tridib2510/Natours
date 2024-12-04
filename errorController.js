@@ -29,13 +29,11 @@ const handleValidationErrorDB=err=>{
     
 }
 //It its used to hadle JWT Errors
-const handleJWTError=()=>{
-    new AppError('Invalid Token Please log in again',401)
-}
+const handleJWTError=()=>new AppError('Invalid Token Please log in again',401)
+
 //It is used to handle JWT errors when the token is expired
-const handleJWTExpiredError=()=>{
-    new AppError('Your token has expired! Please log in again',401)
-}
+const handleJWTExpiredError=()=> new AppError('Your token has expired! Please log in again',401)
+
 //Error handling for development
 const sendErrorDev=(err,res)=>{
     res.status(err.statusCode).json({
@@ -92,9 +90,12 @@ module.exports=((err,req,res,next)=>{
      //that of an already preexisting field
      if(error.name==='ValidationError')error=handleValidationErrorDB(error)
      //ValidationError just like CastError is an error created by mongoose
-    if(error.name='JsonWebTokenError')error=handleJWTError()
+    if(error.name==='JsonWebTokenError')error=handleJWTError()
   //We do not need to pass in errro as we donot manipulate the error in the specified function
-    if(error.name='TokenExpiredError')error=handleJWTExpiredError()
+   if(error.name==='TokenExpiredError'){
+    error=handleJWTExpiredError()
+    
+   }
     
      sendErrorProd(error,res)
    }
