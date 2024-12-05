@@ -4,6 +4,7 @@ const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const catchAsync=require('./utils/catchAsync')
 const AppError=require('./utils/appError')
+const { Console } = require('console')
 
 //Function for token
 const signToken=id=>{
@@ -152,8 +153,10 @@ if(!freshUser){
 //the documents 
 
 //freshUser.changedPasswordAfter(decoded.iat)//iat->issued At
-if(!freshUser.changedPasswordAfter(decoded.iat)){
-    return next(new AppError('User recently changed password Please log in',401))
+console.log(freshUser.changedPasswordAfter(decoded.iat))
+if(freshUser.changedPasswordAfter(decoded.iat)){
+  
+   return next(new AppError('The user no longer exists',401))
 }
 //So if the code can make it all the way to the end then nonly next is executed
    //next() gives acess to the protected route 

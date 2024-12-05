@@ -56,7 +56,7 @@ const sendErrorProd=(err,res)=>{// If the error we encounter is a programming er
     }
 else{//Programming error or other unknown error:don't leak error detail
     //1)log the error
-    console.error('ERROR')//It is like console.log() but for errors
+   // console.error('ERROR')//It is like console.log() but for errors
     //2)Send general message
     res.status(500).json({
         status:'error',
