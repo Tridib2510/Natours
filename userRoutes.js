@@ -12,7 +12,7 @@ router.post('/login',authController.login)
 //It would only receive the email address
 router.post('/forgotPassword',authController.forgotPassword)
 //It would receive the token as well as the new password
-router.post('/resetPassword',authController.resetPassword)
+router.patch('/resetPassword/:token',authController.resetPassword)
 router
 .route('/')
 .get(userController.getAllUsers)

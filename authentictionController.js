@@ -4,6 +4,7 @@ const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const catchAsync=require('./utils/catchAsync')
 const AppError=require('./utils/appError')
+const sendEmail=require('./utils/email')
 const { Console } = require('console')
 
 //Function for token
@@ -204,6 +205,32 @@ await user.save({validateBeforeSave:false})//This option deactivates all the val
 
 
 //3)send it to the user email
+
+//The user should be able to click on the email to do the request from
+const resetUrl=`${req.protocol}://${req.get('host')}/api/v1/users/resetPassword/${resetToken}`//Getting the protocol from the request basically http or 
+//We are preparing for this to work both in development and in production
+const message=`Forgot your? Submit a PATCH request with your new password and password confirm to the ${resetUrl}\n If you didn't forgot your password, please ignore this email`
+try{
+await sendEmail({
+  email:user.email,
+  subject:'Your password reset Token (valid for 10 minutes)',
+  message
+
+})
+
+res.status(200).json({
+  status:"success",
+  message:"Token send to email"
+})
+}catch(err){
+  console.log('hello brooooooooooooo')
+  //Here we basically want to reset both the token  and the expire property
+ user.passwordResetToken=undefined
+user. passwordResetExpires=undefined
+  await user.save({validateBeforeSave:false})
+  return next(new AppError("There was an eror sending the email.Please try again later",500))
+}
+//If some error happens in the sendEmail we need to send back the password reset token and the password reset expired that we define
 })
 exports.resetPassword=(req,res,next)=>{
 
