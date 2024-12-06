@@ -155,7 +155,7 @@ userSchema.methods.createPasswordResetToken=function(){
   //to store it in the database so that we can compare it with the token that
   //the user provide
   
-
+ console.log({resetToken},this.passwordResetToken)
 
   this.passwordResetExpires=Date.now()+10*60*1000//(10*60*1000) is the added 10 minutes for which the token would work in milliseconds
 
