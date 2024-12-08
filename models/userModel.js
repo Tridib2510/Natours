@@ -50,6 +50,24 @@ const userSchema=new mongoose.Schema({
   passwordResetExpires:Date//This token would expire after a certail period for security measure
 
 })
+//The below is used to implement password changedAt property below
+userSchema.pre('save', async function(next){
+//We only want it when we have modified the password property 
+if(!this.isModified('password')||this.isNew){
+    return next()
+}
+//So if the password is not modified then donot manipulate the password changedAt
+//But what about creating the password?
+//When we create a new document we did indeed modify the password then we would set the 'passwordChangedAt' property
+//this.isNew checks if the document is new so we substract 1 second from the passwordChangedAt property
+
+this.passwordChangedAt=Date.now()-1000
+//Putting the passwordChangedAt -1 will always make sure that the token is created after the password has been changed
+next()
+
+//Sometimes saving to the database becomes much slower that issuing the JWT making is so that the 'changedPassword' timestamp is set 
+//a bit after the jwt is created which will make is so that the user will not be able to log in using the new token
+})
 userSchema.pre('save',async function(next){
   //It should only work for signup or updating the password
   //It should not happen when the user only update the name or email and anything beside the password

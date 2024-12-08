@@ -1,5 +1,5 @@
 const {promisify}=require('util')//Since we are only going to use the promisify method from this
-
+const crypto=require('crypto')
 const jwt=require('jsonwebtoken')
 const User=require('./models/userModel')
 const catchAsync=require('./utils/catchAsync')
@@ -232,6 +232,48 @@ user. passwordResetExpires=undefined
 }
 //If some error happens in the sendEmail we need to send back the password reset token and the password reset expired that we define
 })
-exports.resetPassword=(req,res,next)=>{
+exports.resetPassword=catchAsync(async (req,res,next)=>{
+//1)Get user based on the token
 
+//The reset token that is send in the url is the non encrypted one and the one stored in the url is the encrypted one
+//So we need to encrypt the original token and compare it with the one stored in the database
+
+const hashedToken=crypto.createHash('sha256').update(req.params.token).digest('hex')//req.params.token is the parameter we specified in the url of the 'resetPassword'
+
+const user=await User.findOne({passwordResetToken:hashedToken,passwordResetExpires:{$gt:Date.now()}}) //For the comparison, behind the scene MongoDB convert the Date.now() && passwordResetExpires to the same datatype and compare
+
+
+
+//2)If token has not expired and there is a user,then set the new password
+
+//Basically what we want to check is that weather the password expire property is greater than right now
+//If so then that means that it is in the future which means that the token has still not expired
+//We do it directly in the query in line 243
+
+//Next up we want to set an error if weather there is no user and the token is expired
+if(!user){
+  return next(new AppError('The token is invalid or has expired',400))
 }
+user.password=req.body.password//This is because we are going to send the password and also the password confirm via body
+user.passwordConfirm=req.body.passwordConfirm
+user.passwordResetToken=undefined
+user.passwordResetExpires=undefined
+
+//saving the changes in the document
+await user.save()//In this case we don't want to turn off the validators because we want to validate .We want to check
+//if password===passwordConfirm
+
+
+//3)Update the changedPasswordAt property for the current user
+
+
+//4)Log the user in, send JWT to the client
+const token=signToken(user._id)
+
+res.status(200).json({
+  status:"success",
+  token
+})
+
+
+})
