@@ -242,7 +242,7 @@ user. passwordResetExpires=undefined
 exports.resetPassword=catchAsync(async (req,res,next)=>{
 //1)Get user based on the token
 
-//The reset token that is send in the url is the non encrypted one and the one stored in the url is the encrypted one
+//The reset token that is send in the url is the non encrypted one and the one stored in the database is the encrypted one
 //So we need to encrypt the original token and compare it with the one stored in the database
 
 const hashedToken=crypto.createHash('sha256').update(req.params.token).digest('hex')//req.params.token is the parameter we specified in the url of the 'resetPassword'

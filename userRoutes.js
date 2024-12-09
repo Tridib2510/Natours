@@ -14,6 +14,8 @@ router.post('/forgotPassword',authController.forgotPassword)
 //It would receive the token as well as the new password
 router.patch('/resetPassword/:token',authController.resetPassword)
 router.patch('/updateMyPassword',authController.protect,authController.updatePassword)
+//The down route would update the details of the logged in user
+router.patch('/updateMe',authController.protect,userController.updateMe)
 router
 .route('/')
 .get(userController.getAllUsers)
