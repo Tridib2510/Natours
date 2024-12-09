@@ -13,6 +13,7 @@ router.post('/login',authController.login)
 router.post('/forgotPassword',authController.forgotPassword)
 //It would receive the token as well as the new password
 router.patch('/resetPassword/:token',authController.resetPassword)
+router.patch('/updateMyPassword',authController.protect,authController.updatePassword)
 router
 .route('/')
 .get(userController.getAllUsers)

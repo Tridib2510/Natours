@@ -13,6 +13,13 @@ const signToken=id=>{
         expiresIn:process.env.JWT_EXPIRES_IN//Expiration Date
        })
 }
+const createAndSendToken=(user,statusCode,res)=>{
+ const token=signToken(user._id)
+  res.status(statusCode).json({
+  status:"success",
+  token 
+ })
+}
 exports.signup=catchAsync(async (req,res,next)=>{ //We wrap this function in catchAsynch so that we do not need to write catch block everytime
     const newUser=await User.create({
         name:req.body.name,
@@ -223,7 +230,7 @@ res.status(200).json({
   message:"Token send to email"
 })
 }catch(err){
-  console.log('hello brooooooooooooo')
+  
   //Here we basically want to reset both the token  and the expire property
  user.passwordResetToken=undefined
 user. passwordResetExpires=undefined
@@ -265,7 +272,7 @@ await user.save()//In this case we don't want to turn off the validators because
 
 
 //3)Update the changedPasswordAt property for the current user
-
+//This is done in a middleware in userModel
 
 //4)Log the user in, send JWT to the client
 const token=signToken(user._id)
@@ -276,4 +283,29 @@ res.status(200).json({
 })
 
 
+})
+exports.updatePassword=catchAsync( async (req,res,next)=>{
+  //This functionality is only for logged in users but we still want to pass in our password for security measures
+  //Beacause someone might find our pc open and might change our password which will be a terrible experience for the user
+  //So we always need to ask for the current password before updating
+
+  //1)Get user from ceollection
+  const user=User.findById(req.user._id).select('+password')//This req.user.id is coming from the protect middleware
+  //2)Check if the posted password is correct
+  if(!(await user.correctPassword(req.body.passwordCurrent,user.password))){
+    return next(new AppError('Your current password is wrong',401))
+  }
+  //3)If so update the password
+  this.password=req.body.password
+  this.passwordConfirm=req.body.passwordConfirm
+  await user.save()
+  //Why did't we do findByIdAndUpdate?
+  //This is because the validator which checks if password===passwordConfirm is not going to work 
+  //That is because this.password is not defined when we update
+  //Because internally behind the scene mongoose doesnot really keep the current object in memory
+  //That validator only works for 'CREATE' and 'Save'
+
+  //4)Log user in ,send JWT
+ createAndSendToken(user,200,res)
+  next()
 })
