@@ -47,11 +47,27 @@ exports.updateMe=catchAsync(async(req,res,next)=>{
     })
 
 })
+
+exports.deleteMe=catchAsync(async (req,res,next)=>{
+   await User.findByIdAndUpdate(req.user._id,{active:false})
+   res.status(204).json({//This 204 makes it so that the response is not even visible in postman but we still send the response since it is good practice
+    status:"success",
+    date:null
+
+   })
+   //At the end we need to make sure that in the response send to the cliend the inactice fields are not present
+   //To solve this problem we are going to use the query middleware
+})
+
 exports.getAllUsers=catchAsync(async(req,res)=>{
+    console.log("Testing 1")
     const user=await User.find()
-    res.status(500).json({
-        status:'error',
-        message:'This route is not yet defined'
+    res.status(200).json({
+        status:'success',
+       results:user.length,
+       data:{
+        user
+       }
     })
 
 })

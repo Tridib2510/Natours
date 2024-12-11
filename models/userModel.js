@@ -47,8 +47,20 @@ const userSchema=new mongoose.Schema({
   },
   passwordChangedAt:Date,//This property will always be changed when someone changes his password
   passwordResetToken:String,
-  passwordResetExpires:Date//This token would expire after a certail period for security measure
+  passwordResetExpires:Date,//This token would expire after a certail period for security measure
+  active:{//This is true if the user has not deleated his account else it is false
+    type:Boolean,
+    default:true,
+    select:false
+  }
 
+})
+//The below middleware is used to find the inacticve accountes(accounts which were deleted)
+userSchema.pre(/^find/,function(next){//The regular expression '/^find/ finds regular expressions starting with 'find'
+
+  //Before query is excecuted we want to add something which is that we only want to find the documents that has the active propery =true
+this.find({active:{$ne:false}})
+next()
 })
 //The below is used to implement password changedAt property below
 userSchema.pre('save', async function(next){

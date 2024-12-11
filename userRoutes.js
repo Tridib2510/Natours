@@ -14,6 +14,8 @@ router.post('/forgotPassword',authController.forgotPassword)
 //It would receive the token as well as the new password
 router.patch('/resetPassword/:token',authController.resetPassword)
 router.patch('/updateMyPassword',authController.protect,authController.updatePassword)
+//THE below route is used to delete our account
+router.delete('/deleteMe',authController.protect,userController.deleteMe)
 //The down route would update the details of the logged in user
 router.patch('/updateMe',authController.protect,userController.updateMe)
 router
