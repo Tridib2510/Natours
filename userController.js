@@ -27,12 +27,12 @@ exports.updateMe=catchAsync(async(req,res,next)=>{
     }
     
 
-   //3)Filtered out unwanted field names that are not to be updated
+   //2)Filtered out unwanted field names that are not to be updated
     
    const filteredBody=filterObj(req.body,'name','email')//name and email are the only prop that we are giving permission to update currently
    
 
-   //2)Update user document
+   //3)Update user document
     //We could try to do it with user.save() like before but the problem with that is that 
     //There are some fields that are recquired but are not updating because of that we will get validation errors
    const updatedUser=await User.findByIdAndUpdate(req.user.id,filteredBody,{
