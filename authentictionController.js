@@ -14,10 +14,26 @@ const signToken=id=>{
        })
 }
 const createAndSendToken=(user,statusCode,res)=>{
- const token=signToken(user._id)
+  const token=signToken(user._id)
+  //We are going to create a cookie which would contains the jwt which we will send to the cliet
+  const cookieOptions={
+    expires:new Date(Date.now()+process.env.JWT_COOKIE_EXPIRES*24*60*60*1000),//This expires property will make it so that the browser or client in general would delete the cookie after it has expired
+    //It excepts only milli seconds
+    //secure:true,//This means that the cookie would only be send on a encrypted connection(https)
+    httpOnly:true//This makes it so that the cookie can not be acessed in any way by the browser
+  }
+  //We do not need secure:true since we are not in production and currently donot have https
+  if(process.env.NODE_ENV==='production')cookieOptions.secure=true//So we will get secure:true only in production
+  res.cookie('jwt',token,cookieOptions)
+ 
+user.password=undefined//So that it will not be visible in the response
+
   res.status(statusCode).json({
   status:"success",
-  token 
+  token,
+  data:{
+    user
+  }
  })
 }
 exports.signup=catchAsync(async (req,res,next)=>{ //We wrap this function in catchAsynch so that we do not need to write catch block everytime
@@ -42,7 +58,7 @@ exports.signup=catchAsync(async (req,res,next)=>{ //We wrap this function in cat
 //     expiresIn:process.env.JWT_EXPIRES_IN//Expiration Date
 //    })
    
-const token=signToken(newUser._id)
+//const token=signToken(newUser._id)
 //For the best encryption secretOrPrivateKey must be at least 32 characters long
    //we can pass in some options in the third parameter.It mentions when the JWT expires
    //After the specified time JSON Web token would no longer be valid 
@@ -51,13 +67,7 @@ const token=signToken(newUser._id)
    //#Note:Make tour own secret key do not copy it from any tutorial
 
    //Here the expire time we have given in 90 days
-   res.status(201).json({
-    status:"success",
-    token,//We are sending the token to the new user and log the user in when he creates his account
-    data:{
-        user:newUser
-    }
-   })
+   createAndSendToken(newUser,201,res)
 })
 exports.login=catchAsync(async (req,res,next)=>{
     const {email,password}=req.body
@@ -78,11 +88,7 @@ exports.login=catchAsync(async (req,res,next)=>{
         return next(new AppError('Incorrect email or password',401))
      }
     //3)If everything is okay,send token to client
-    const token=signToken(user._id)
-    res.status(200).json({
-        status:"success",
-        token
-    })
+    createAndSendToken(user,200,res)
 })
 exports.protect=catchAsync(async(req,res,next)=>{
 //1)Getting token and check if it's available
@@ -275,12 +281,8 @@ await user.save()//In this case we don't want to turn off the validators because
 //This is done in a middleware in userModel
 
 //4)Log the user in, send JWT to the client
-const token=signToken(user._id)
+createAndSendToken(user,200,res)
 
-res.status(200).json({
-  status:"success",
-  token
-})
 
 
 })
