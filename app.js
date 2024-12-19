@@ -1,6 +1,7 @@
 const fs=require('fs')
 const express=require('express')
 const AppError=require('./utils/appError')
+const rateLimit=require('express-rate-limit')
 const app=express()
 const globalErrorHandler=require('./errorController')
 app.use(express.static(`${__dirname}`))
@@ -11,6 +12,18 @@ app.use((req,res,next)=>{
   //We can send the headers using postman
    next()
 })
+//Implementing rate limiter
+const limiter=rateLimit({
+    //Here we can define how many request per IP we are going to allow in a certain amount of time
+    //Here we are going to allow 100 request per hour
+    max:3,
+    windowMs:60*60*100,//WindowMs takes value in milliseconds
+    message:'Too many request from an IP please try again in an hour'
+})
+app.use('/api',limiter)//We want to only apply  this limiter only for /api
+
+
+
 app.use(express.json()) 
 app.use('/api/v1/tours',tourRouter)
 app.use('/api/v1/users',userRouter)
