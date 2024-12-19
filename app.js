@@ -3,8 +3,9 @@ const express=require('express')
 const AppError=require('./utils/appError')
 const rateLimit=require('express-rate-limit')
 const app=express()
+const helmet=require('helmet')
 const globalErrorHandler=require('./errorController')
-app.use(express.static(`${__dirname}`))
+
 const tourRouter=require('./tourRoutes')
 const userRouter=require('./userRoutes')
 app.use((req,res,next)=>{
@@ -16,15 +17,24 @@ app.use((req,res,next)=>{
 const limiter=rateLimit({
     //Here we can define how many request per IP we are going to allow in a certain amount of time
     //Here we are going to allow 100 request per hour
-    max:3,
-    windowMs:60*60*100,//WindowMs takes value in milliseconds
+    max:100,
+    windowMs:60*60*1000,//WindowMs takes value in milliseconds
     message:'Too many request from an IP please try again in an hour'
 })
 app.use('/api',limiter)//We want to only apply  this limiter only for /api
 
+//Set security http headers
+app.use(helmet())
 
+//Serving static files
+app.use(express.static(`${__dirname}`))
 
-app.use(express.json()) 
+//Body parser, reading data from the body into req.body
+app.use(express.json({
+    //Here we can specify some options to limit the amout of data coming into the body
+    limit:'10kb'//kb->kilobyte
+    //So now when we will have a body larger than 10 kb it will not be accepted
+})) 
 app.use('/api/v1/tours',tourRouter)
 app.use('/api/v1/users',userRouter)
 // app.all('*',(req,res,next)=>{
