@@ -2,6 +2,8 @@ const fs=require('fs')
 const express=require('express')
 const AppError=require('./utils/appError')
 const rateLimit=require('express-rate-limit')
+const mongoSanitize=require('express-mongo-sanitize')
+const xss=require('xss-clean')
 const app=express()
 const helmet=require('helmet')
 const globalErrorHandler=require('./errorController')
@@ -34,7 +36,17 @@ app.use(express.json({
     //Here we can specify some options to limit the amout of data coming into the body
     limit:'10kb'//kb->kilobyte
     //So now when we will have a body larger than 10 kb it will not be accepted
-})) 
+}))
+
+//Data Sanitization against NOSQL  query injection
+//app.use(mongoSanitize())//mongoSanitize() returns a milldleware function
+//This middleware looks at the query body ,req query string and also at req.params and then it would filter out all of the '$' and '.' 
+//because that is gow mongoDB operators are written
+
+//Data Santization against XSS attacks
+app.use(xss)//clears malicious html code with some javascript code
+//We prevent this by converting all this html symbols
+
 app.use('/api/v1/tours',tourRouter)
 app.use('/api/v1/users',userRouter)
 // app.all('*',(req,res,next)=>{
