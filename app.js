@@ -39,14 +39,14 @@ app.use(express.json({
 }))
 
 //Data Sanitization against NOSQL  query injection
-//app.use(mongoSanitize())//mongoSanitize() returns a milldleware function
+app.use(mongoSanitize())//mongoSanitize() returns a milldleware function
 //This middleware looks at the query body ,req query string and also at req.params and then it would filter out all of the '$' and '.' 
 //because that is gow mongoDB operators are written
 
 //Data Santization against XSS attacks
-app.use(xss)//clears malicious html code with some javascript code
+app.use(xss())//clears malicious html code with some javascript code
 //We prevent this by converting all this html symbols
-
+//Be very carefull while using global middleware .A single misspell will result in not getting any response in postman
 app.use('/api/v1/tours',tourRouter)
 app.use('/api/v1/users',userRouter)
 // app.all('*',(req,res,next)=>{
