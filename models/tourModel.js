@@ -1,4 +1,7 @@
 const mongoose=require('mongoose')
+
+const user=require('./userModel')
+
 const tourSchema=new mongoose.Schema({
     name:{
         type:String,//hello
@@ -42,7 +45,7 @@ const tourSchema=new mongoose.Schema({
     description:{
         type:String,
         trim:true,
-        required:[true,'A tour must have a description']
+        //required:[true,'A tour must have a description']
     },
     imageCenter:{
         type:String,
@@ -58,9 +61,53 @@ const tourSchema=new mongoose.Schema({
     secretTour:{
         type:Boolean,//If this is a secret tour we don't want it to show up for the majority of clients
         default:false
+    },
+    //Our location data will be embedded in the tours so we are basically gonna declare anything realated to the location in our tour model
+//MongoDB supports geospatial data which is basically data that basically describes places on earth based on logitudes and latitudes
+//MongoDB uses a special data format called GeoJSON which is basically a special format for specifying geospatial data
+startLocation:{
+    type:{
+       type:String,
+       default:'Point',//We can specify multiple geometry in mongodb like polygons ,lines etc but the default is point
+       enum:['Point']//We want to make sure that this is the only option
+    },
+    coordinates:[Number],//This array is expects the coordinates with the logitude first and the  the latitude
+    address:String,
+    description:String,
+ //So in order to specify geospacial data with MongoDB we need to create a object and that object should have atleast 2 field names coordinates and type
+
+ //In order to really create new documents and then embed them into a othe document we need to actually create an array
+
+ //In this array where we are going to specify the objects
+ locations:[
+    {
+        type:{
+            type:String,
+            default:'Point',
+            enum:['Point']
+        },
+        coordinates:[Number],
+        address:String,
+        description:String,
+        day:Number//The day on which people are going to go to that location
+
     }
+ ],
+ 
+
     
 
+},
+//guides:Array//For embedding
+guides:[
+ {
+    type:mongoose.Schema.ObjectId,//We expect the type of each of the element to be a mongoDB id
+    ref:'User'//This is how we establish references to a other dataset in mongoose and for this we do not even need the 'User' to be imported here
+
+//So the id's get saved in the guides and not the whole users document 
+//Now we will take care such that the user data actually shows up . We will do that in two different ways.We are going to use a process called populating
+} 
+],
 },{
     toJSON:{
         toJSON:{virtuals:true},
@@ -86,5 +133,31 @@ const tourSchema=new mongoose.Schema({
 //     console.log("Duration is "+(Date.now()-this.start))
 //     next()
 //     })
+
+// tourSchema.pre('save',async function(next){
+//     //We will loop through all the user id's and then for each iteration get the user document for the current id
+//     //and we are going to store that inside of guides
+//     console.log(this.guides)  
+//     const guidesPromise=this.guides.map(async id=>await user.findById(id))
+//     //a asynchronous functin returns an promise and the guides array is basically an array of promises
+
+//     this.guides=await Promise.all(guidesPromise)//We use Promise.all() as the result of the map function is an array of promises
+//     next()
+// })//This only works for creating new documents and not for updating the documents however we are not going to do the same thing for updates 
+//As there are some draw backs ex->A tour guides has email address or they change the role from guide to Lead-guide .Every time such changes occur
+//Then we have to check if the tour has that user as a guide then we have to update the tour document as well
+
+
+
+//Now we connect tours and users via referencing .This time in this video the idea is that tours and users will remain completely seperate entities 
+//in our database
+
+
+
+
 const Tour=mongoose.model('Tour',tourSchema)
-module.exports=Tour //hey man
+module.exports=Tour 
+
+//In Lec 151 we are going to embed the user documents into the tour documents
+//So when creating a new tour document the user will simply add an array of user ids and then we will get the correspoding user documents based on these id's 
+//and add them to our tour documens

@@ -91,6 +91,8 @@ exports.login=catchAsync(async (req,res,next)=>{
     createAndSendToken(user,200,res)
 })
 exports.protect=catchAsync(async(req,res,next)=>{
+
+  console.log(req.headers)
 //1)Getting token and check if it's available
 //console.log(req.headers)
  let token

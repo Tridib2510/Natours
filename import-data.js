@@ -22,7 +22,7 @@ mongoose.connect(DB,{
     console.log('Error')
 })
 //READING THE FILE
-const tours=JSON.parse(fs.readFileSync('tours-simple.json','utf-8'))
+const tours=JSON.parse(fs.readFileSync('tours.json','utf-8'))
 
 //IMPORT DATA INTO THE DATABASE
 
