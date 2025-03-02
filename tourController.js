@@ -1,4 +1,4 @@
-
+const AppError=require('./utils/appError')
 const Tour=require('./models/tourModel')
 const APIFeatures=require('./utils/apiFeatures')
 const catchAsync=require('./utils/catchAsync')
@@ -37,9 +37,25 @@ exports.deleteTour=catchAsync(async (req,res,next)=>{
   
 })
 exports.getTour=catchAsync(async (req,res,next)=>{
+
+//In Lect 153 we are going to use a process called populate in order to get accessed to the referenced tour guides whenever we query our certain tour
+//The result of that would look as if the data has already been embedded when infact it is in a completely different collection
+//The populate process always happens in a query
+
     const id=req.params.id*1
     
     const tour=await Tour.findById(req.params.id)
+
+    // const tour=await Tour.findById(req.params.id).populate({
+    //     path:'guides',
+    //     select:'-__v -passwordChangedAt' //__v and passwordChangedAt will not be displaced '-' before the property name ins important
+
+    // }) 
+
+    //populate->To basically fill up the field called guides in our model which contains the reference with the actual data
+
+    //This populate option is a fundamental tool when working with data in mongoose and when there are relationships between data
+    //Behind the scenes using popluate will create a new query so it might affect your performance
    
         if(!tour){
           

@@ -153,6 +153,16 @@ guides:[
 //in our database
 
 
+//We use the populate in query middleware for better structrue of our code
+//This now works for both getAllTours and getTour (individually)
+//This works for both creating and updating tours 
+tourSchema.pre('/^find/',function(next){
+    this.populate({
+        path:'guides',
+        select:'--v --passwordChangedAt'
+    })
+    next()
+})//This query middleware works for everything that starts with find
 
 
 const Tour=mongoose.model('Tour',tourSchema)
@@ -161,3 +171,6 @@ module.exports=Tour
 //In Lec 151 we are going to embed the user documents into the tour documents
 //So when creating a new tour document the user will simply add an array of user ids and then we will get the correspoding user documents based on these id's 
 //and add them to our tour documens
+
+//In Lec 154 we will continue to translate the data model that we establish at the beginning of the section into some actual code
+//This time we are going to implement the reviews model
