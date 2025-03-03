@@ -38,3 +38,7 @@ const Review=mongoose.model('Review',reviewScheme)
 module.exports=Review
 
 //A review must belong to a tour and must also have an author .So we are going to implemet parent referencing in this case
+
+
+//In Lec 155 we arre going to continue implementing the review resource.We are going to implement a end point for getting our reveiws and 
+//also for creating new reviews

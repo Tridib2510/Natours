@@ -92,12 +92,11 @@ exports.login=catchAsync(async (req,res,next)=>{
 })
 exports.protect=catchAsync(async(req,res,next)=>{
 
-  console.log(req.headers)
+
 //1)Getting token and check if it's available
 //console.log(req.headers)
  let token
  if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-    console.log(req.headers)
     token=req.headers.authorization.split(' ')[1]
     //console.log(token)
  }
@@ -114,6 +113,8 @@ exports.protect=catchAsync(async(req,res,next)=>{
 //already expired
 
 const decoded=await promisify(jwt.verify)(token,process.env.JWT_SECRET)
+
+console.log("Test case passed")
     //The call back runs as soon as the vefification has been completed
 //console.log(decoded)
 //algo reads the payload
@@ -179,6 +180,7 @@ if(freshUser.changedPasswordAfter(decoded.iat)){
    req.user=freshUser
    //We are putting the entire user data on the request
    //This will be useful some time in the future
+   console.log('Test case 3 passed')
 next()
 })
 //Creating authorization Controller
@@ -186,9 +188,13 @@ exports.restrictTo=(...roles)=>{//Create an array of all the parameters that wer
   return (req,res,next)=>{
   //We will give a user acess to a certain route when the user role is inside
   //of this roles array
-if(!roles.includes(req.user.roles)){//The protect middleware runs before this middleware.So the currentUser is on the req Object as specified in line 153.So we can use that here
+  console.log(req.user)
+  
+
+if(!roles.includes(req.user.role)){//The protect middleware runs before this middleware.So the currentUser is on the req Object as specified in line 153.So we can use that here
   return next(new AppError('You do not have permission to perform this action',403))//403->StausCode for non authorization
 }
+
   next()
   }//This is the middleware function that will get acess to the roles parameter
 

@@ -10,6 +10,8 @@ const globalErrorHandler=require('./errorController')
 
 const tourRouter=require('./tourRoutes')
 const userRouter=require('./userRoutes')
+const reviewRouter=require('./reviewRoutes')
+
 app.use((req,res,next)=>{
    //console.log(req.headers)//This is how we get access to http headers in express
   //We can send the headers using postman
@@ -49,6 +51,8 @@ app.use(xss())//clears malicious html code with some javascript code
 //Be very carefull while using global middleware .A single misspell will result in not getting any response in postman
 app.use('/api/v1/tours',tourRouter)
 app.use('/api/v1/users',userRouter)
+app.use('/api/v1/reviews',reviewRouter)
+
 // app.all('*',(req,res,next)=>{
 //     res.status(404).json({
 //         status:"fail",
