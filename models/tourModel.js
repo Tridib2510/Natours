@@ -103,7 +103,7 @@ guides:[
  {
     type:mongoose.Schema.ObjectId,//We expect the type of each of the element to be a mongoDB id
     ref:'User'//This is how we establish references to a other dataset in mongoose and for this we do not even need the 'User' to be imported here
-
+    //ref should the model name of users model
 //So the id's get saved in the guides and not the whole users document 
 //Now we will take care such that the user data actually shows up . We will do that in two different ways.We are going to use a process called populating
 } 
