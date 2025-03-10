@@ -44,7 +44,12 @@ exports.getTour=catchAsync(async (req,res,next)=>{
 
     const id=req.params.id*1
     
-    const tour=await Tour.findById(req.params.id)
+    const tour=await Tour.findById(req.params.id).populate('reviews')//Here we virtually populate the reviews in the tour model
+
+   
+
+
+
 
     // const tour=await Tour.findById(req.params.id).populate({
     //     path:'guides',

@@ -14,6 +14,13 @@ exports.getAllReviews=catchAsync(async (req,res,next)=>{
 })
 
 exports.createReview=catchAsync(async(req,res,next)=>{
+    console.log('Test case passed')
+    //Allow nested routes
+    //This make it so that the user can still manually specify the user and the tour id manually and if he doesn't then 
+    //it is done by the code below
+    //console.log(req.user)
+    if(!req.body.tour)req.body.tour=req.params.tourId
+    if(!req.body.user)req.body.user=req.user._id
     const newReview=await Review.create(req.body)
 
     res.status(201).json({
@@ -23,4 +30,3 @@ exports.createReview=catchAsync(async(req,res,next)=>{
         }
     })
 })
-

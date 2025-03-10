@@ -2,6 +2,7 @@ const express=require('express')
 const router=express.Router()
 const userController=require('./userController')
 const authController=require('./authentictionController')
+
 router.post('/signup',authController.signup)
 //This signup is kind of a special end point this doesn't fit the REST Architecture
 //In this case it doesn't make much sense 
@@ -28,4 +29,5 @@ router
 .get(userController.getUser)
 .patch(userController.updateUser)
 .delete(userController.deleteUser)
+
 module.exports=router

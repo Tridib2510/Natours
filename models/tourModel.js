@@ -109,16 +109,16 @@ guides:[
 } 
 ],
 },{
-    toJSON:{
-        toJSON:{virtuals:true},
-        toObj:{virtuals:true}
-    }//Each time that the data is outputed as JSON we want the virtuals to be true
+    
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
+    //Each time that the data is outputed as JSON we want the virtuals to be true
 })
 //Virtual Property
-// tourSchema.virtual('durationWeeks').get(function(){
-//     console.log(this.duration/7)
-//     return this.duration/7
-// })
+tourSchema.virtual('durationWeeks').get(function(){
+    console.log(this.duration/7)
+    return this.duration/7
+})
 //Document middle ware .It runs before the .save() and .create()
 // tourSchema.pre(/^find/,function(next){
 // //Here this points to the currently processed document
@@ -152,10 +152,24 @@ guides:[
 //Now we connect tours and users via referencing .This time in this video the idea is that tours and users will remain completely seperate entities 
 //in our database
 
+//Using virtual poplulate
+//We would use this populate only on getOneTour and not getAllTour
+tourSchema.virtual('reviews',{
+    ref:'Review',
+    //Here we have to specify 2 fields the foreign field and the local field
+    foreignField:'tour',//This is the name of the field in the other model ie review model in this case
+    //In our review modele we have a field called tour which references our tour model
+    localField:'_id' //Here we have to specify where that id is currently stored in this model 
+    //The tour model is called by _id in it's own model and it is refered to as tour in the review model
+})
+
 
 //We use the populate in query middleware for better structrue of our code
 //This now works for both getAllTours and getTour (individually)
 //This works for both creating and updating tours 
+
+
+
 tourSchema.pre('/^find/',function(next){
     this.populate({
         path:'guides',
@@ -163,6 +177,9 @@ tourSchema.pre('/^find/',function(next){
     })
     next()
 })//This query middleware works for everything that starts with find
+
+
+
 
 
 const Tour=mongoose.model('Tour',tourSchema)
@@ -174,3 +191,11 @@ module.exports=Tour
 
 //In Lec 154 we will continue to translate the data model that we establish at the beginning of the section into some actual code
 //This time we are going to implement the reviews model
+
+
+
+//There is still one problem ie  how are going to access reviews on the tours
+//This problem arises since we did parent referencing on the tour so the reviews pointing to the tour and not the tour pointing to the reviews
+//In Lec 157 we are going to solve this
+//So we are going to use a advance mongoosee feature called virtual populate. 
+//With virtual populate we can actually populate the tour with reviews without persisting it in our database

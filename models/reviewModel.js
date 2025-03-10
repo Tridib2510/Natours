@@ -35,12 +35,29 @@ const reviewScheme=new mongoose.Schema({
 
 //In Lec 156 we are going to populate both the user and the tour data
 
+
+
+
+
+
 reviewScheme.pre(/^find/,function(next){ //vvi /^find/ should not be inside ''
+
+    //Now the populate is creating a chain of populate which is not ideal for performance
+   //So the solution we are going to use is actually turn off populating the review in the review model
+   //With this the tour in the reviews of the tour document will not get populated
+    
+    // this.populate({
+    //     path:'tour',
+    //     select:'name'
+    // }).populate({
+    //     path:'user',
+    //     select:'name photo' //Will only display name and photo
+    // })
+
+
+
     
     this.populate({
-        path:'tour',
-        select:'name'
-    }).populate({
         path:'user',
         select:'name photo' //Will only display name and photo
     })
@@ -60,6 +77,3 @@ module.exports=Review
 
 //In Lec 155 we arre going to continue implementing the review resource.We are going to implement a end point for getting our reveiws and 
 //also for creating new reviews
-
-
-
