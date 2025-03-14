@@ -4,6 +4,7 @@ const router=express.Router()
 const tourController=require('./tourController')
 const authController=require('./authentictionController')
 const reviewController=require('./reviewController')
+const reviewRouter=require('./reviewRoutes')
  // router.param('id',tourController.CheckId)
 router.route('/top-5-cheap').get(tourController.aliasTopTours,tourController.getAllTour)
 router.route('/monthly-plan/:year').get(tourController.getMonthlyPlan)
@@ -42,10 +43,11 @@ router
 //GET->tour/tourId/reviews .Here we get all the reviews in tour with ID=tourId
 //GET->tour/tourId/reviews/reviewsId . Here we get the review  with id=reviews id from the tour with ID=tourId
 
-router.route('/:tourId/reviews')
-.post(authController.protect,authController.restrictTo('user'),reviewController.createReview)
+// router.route('/:tourId/reviews')
+// .post(authController.protect,authController.restrictTo('user'),reviewController.createReview)
 
 
-
+router.use('/:tourId/reviews',reviewRouter)//This is basically mounting a router like we did in app.js
 
 module.exports=router
+
