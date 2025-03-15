@@ -1,5 +1,8 @@
 const Review=require('./models/reviewModel')
 const catchAsync=require('./utils/catchAsync')
+const factory=require('./handlerFactory')//This is the handle factory
+
+
 
 exports.getAllReviews=catchAsync(async (req,res,next)=>{
    //We are goig to check if there is a tourId and if there is then we are going to search for reviews where the tour=tourId
@@ -36,3 +39,5 @@ exports.createReview=catchAsync(async(req,res,next)=>{
         }
     })
 })
+
+exports.deleteReview=factory.deleteOne(Review)

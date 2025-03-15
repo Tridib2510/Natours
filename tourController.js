@@ -2,6 +2,8 @@ const AppError=require('./utils/appError')
 const Tour=require('./models/tourModel')
 const APIFeatures=require('./utils/apiFeatures')
 const catchAsync=require('./utils/catchAsync')
+const factory=require('./handlerFactory')//This is the handle factory
+
 exports.aliasTopTours=(req,res,next)=>{
     req.query.limit=5
     req.query.sort='-ratingsAverage,price'
@@ -30,12 +32,22 @@ exports.getAllTour=(async (req,res,next)=>{
 
 })
 
-exports.deleteTour=catchAsync(async (req,res,next)=>{
+// exports.deleteTour=catchAsync(async (req,res,next)=>{
   
-    const tour=await Tour.findByIdAndDelete(req.params.id)
-   
+//     const tour=await Tour.findByIdAndDelete(req.params.id)
+
+//     if(!tour){
+//         return next(new AppError('No tourfound with the ID',404));
+//     }
+//    res.status(204).json({
+//     status:"success",
+//     data:null
+//    })
   
-})
+// })
+
+exports.deleteTour=factory.deleteOne(Tour)
+
 exports.getTour=catchAsync(async (req,res,next)=>{
 
 //In Lect 153 we are going to use a process called populate in order to get accessed to the referenced tour guides whenever we query our certain tour
