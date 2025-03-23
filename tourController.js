@@ -93,53 +93,58 @@ exports.getTour=catchAsync(async (req,res,next)=>{
 })
 //Here the error comes up only when the ID specified donot matches the mongodb
 //ID type .If it matches then it show tour=null
-exports.updateTour=catchAsync(async (req,res,next)=>{
-    // if(req.params.id*1>tours.length){
-    //     return res.status(404).json({
-    //         status:"fail",
-    //         message:"Invalid ID"
-    //     })
-    // }
+// exports.updateTour=catchAsync(async (req,res,next)=>{
+//     // if(req.params.id*1>tours.length){
+//     //     return res.status(404).json({
+//     //         status:"fail",
+//     //         message:"Invalid ID"
+//     //     })
+//     // }
    
-        const tour=  await Tour.findByIdAndUpdate(req.params.id,req.body,{
-            new:true,
-            runValidators:true
+//         const tour=  await Tour.findByIdAndUpdate(req.params.id,req.body,{
+//             new:true,
+//             runValidators:true
                
-        })
-    res.status(200).json({
-        status:"success",
-        data:{
-            tour //ES6 AUTOMATICALLY CONVERTS IT TO tour:tour since both of them have the same name
-        }
-    })
-
-}
-)
-exports.createTour=catchAsync(async(req,res,next)=>{//fn is the name of the following fu
-    const newTour=await Tour.create(req.body)
-    res.status(201).json({
-        status:"success",
-        data:{
-            tour:newTour
-        }//Here int CreateTour we call the catchAsynch function 
-
-    }) 
-
-    //     try{
-//         const newTour=await Tour.create(req.body)
-//         res.status(201).json({
-//             status:"success",
-//             data:{
-//                 tour:newTour
-//             }
-//         }) 
-// }catch(err){
-//     res.status(400).json({
-//         status:"fail",
-//         message:"Invalid data sent"
+//         })
+//     res.status(200).json({
+//         status:"success",
+//         data:{
+//             tour //ES6 AUTOMATICALLY CONVERTS IT TO tour:tour since both of them have the same name
+//         }
 //     })
+
 // }
-})
+// )
+exports.updateTour=factory.updateOne(Tour)
+
+// exports.createTour=catchAsync(async(req,res,next)=>{//fn is the name of the following fu
+//     const newTour=await Tour.create(req.body)
+//     res.status(201).json({
+//         status:"success",
+//         data:{
+//             tour:newTour
+//         }//Here int CreateTour we call the catchAsynch function 
+
+//     }) 
+
+//     //     try{
+// //         const newTour=await Tour.create(req.body)
+// //         res.status(201).json({
+// //             status:"success",
+// //             data:{
+// //                 tour:newTour
+// //             }
+// //         }) 
+// // }catch(err){
+// //     res.status(400).json({
+// //         status:"fail",
+// //         message:"Invalid data sent"
+// //     })
+// // }
+// })
+
+exports.createTour=factory.createOne(Tour)
+
 //What happens in crateTour?
 //So in order to get rid of our try catch block we basically wrap our asynchronous
 //function inside the catchAsync function that we just created .That function

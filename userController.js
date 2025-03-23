@@ -48,6 +48,8 @@ exports.updateMe=catchAsync(async(req,res,next)=>{
     })
 
 })
+//DO NOT UPDATE PASSWORD WITH THIS
+//exports.updateUser=factory.updateOne(User)//This update users function is only for administrators.It is for updating date which is not password
 
 exports.deleteMe=catchAsync(async (req,res,next)=>{
    await User.findByIdAndUpdate(req.user._id,{active:false})
@@ -79,13 +81,16 @@ exports.getUser=(req,res)=>{
     })
 
 }
+
 exports.createUser=(req,res)=>{
     res.status(500).json({
         status:'error',
         message:'This route is not yet defined'
     })
-
 }
+
+
+
 // exports.deleteUser=(req,res)=>{
 //     res.status(500).json({
 //         status:'error',

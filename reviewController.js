@@ -1,5 +1,6 @@
 const Review=require('./models/reviewModel')
 const catchAsync=require('./utils/catchAsync')
+
 const factory=require('./handlerFactory')//This is the handle factory
 
 
@@ -22,22 +23,31 @@ exports.getAllReviews=catchAsync(async (req,res,next)=>{
     })
 })
 
-exports.createReview=catchAsync(async(req,res,next)=>{
+// exports.createReview=catchAsync(async(req,res,next)=>{
     
-    //Allow nested routes
-    //This make it so that the user can still manually specify the user and the tour id manually and if he doesn't then 
-    //it is done by the code below
-    //console.log(req.user)
+//     //Allow nested routes
+//     //This make it so that the user can still manually specify the user and the tour id manually and if he doesn't then 
+//     //it is done by the code below
+//     //console.log(req.user)
+//     if(!req.body.tour)req.body.tour=req.params.tourId
+//     if(!req.body.user)req.body.user=req.user._id
+//     const newReview=await Review.create(req.body)
+
+//     res.status(201).json({
+//         status:"success",
+//         data:{
+//             review:newReview
+//         }
+//     })
+// }) 
+exports.setTourUserIds=(req,res,next)=>{
     if(!req.body.tour)req.body.tour=req.params.tourId
     if(!req.body.user)req.body.user=req.user._id
-    const newReview=await Review.create(req.body)
+    next()
+}
 
-    res.status(201).json({
-        status:"success",
-        data:{
-            review:newReview
-        }
-    })
-})
+exports.createReview=factory.createOne(Review)
 
+
+exports.updateReview=factory.updateOne(Review)
 exports.deleteReview=factory.deleteOne(Review)

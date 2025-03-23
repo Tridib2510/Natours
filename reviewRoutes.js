@@ -17,9 +17,9 @@ const router=express.Router({mergeParams:true})
 
 router.route('/')
 .get(authController.protect,authController.restrictTo('user'),reviewController.getAllReviews)
-.post(authController.protect,authController.restrictTo('user'),reviewController.createReview)
+.post(authController.protect,authController.restrictTo('user'),reviewController.setTourUserIds,reviewController.createReview)
 
-router.route('/:id').delete(reviewController.deleteReview)//For now we are not messing with authentication 
+router.route('/:id').patch(reviewController.updateReview).delete(reviewController.deleteReview)//For now we are not messing with authentication 
 //We will take care of it later
 
 //We want only the regular users to be able to leave a review and not administrators or tourguides 
