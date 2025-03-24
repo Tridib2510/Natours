@@ -1,5 +1,6 @@
 const catchAsync=require('./utils/catchAsync')
 const AppError=require('./utils/appError')
+const APIFeatures=require('./utils/apiFeatures')
 
 //In Lec 161 we are going to build a handler factory function to delete review documents but also documents
 //from all the other collection all with one simple function
@@ -81,3 +82,71 @@ exports.createOne=Model=>catchAsync(async(req,res,next)=>{//fn is the name of th
 //which is going to run before the createReview
 
 
+//In Lec 163 we are going to create functions for getting documents
+//This one is a bit trickier as we have a populate in the get Tour handler
+//So we going to use the populate method in the query
+
+exports.getOne=(Model,popOptions)=>catchAsync(async (req,res,next)=>{
+
+    //So we are going to first create the query and if there is a populate option object then we are going to add that to the query 
+    //and then we are going to await the query
+
+    let query=Model.findById(req.params.id)
+    if(popOptions)query=query.populate(popOptions)
+        const doc=await query
+    
+        const id=req.params.id*1
+        
+    
+        // const tour=await Tour.findById(req.params.id).populate({
+        //     path:'guides',
+        //     select:'-__v -passwordChangedAt' //__v and passwordChangedAt will not be displaced '-' before the property name ins important
+    
+        // }) 
+    
+        //populate->To basically fill up the field called guides in our model which contains the reference with the actual data
+    
+        //This populate option is a fundamental tool when working with data in mongoose and when there are relationships between data
+        //Behind the scenes using popluate will create a new query so it might affect your performance
+       
+            if(!doc){
+              
+             return next(new AppError('Not found with that ID',404))
+             //we use return as we want to return the function immediately and
+             //not move on to the next line which would try to give 2 responses
+             //leading to error
+            }
+        console.log(req.params)
+        res.status(200).json({
+            status:"success",
+            data:{
+                data:doc
+            }
+        })
+        
+       
+    })
+    exports.getAll=(Model)=>(async (req,res,next)=>{
+        
+        //To allow for nested GET reviews on tour
+        let filter={}
+            if(req.params.tourId)filter={tour:req.params.tourId}
+
+        const features=new APIFeatures(Model.find(filter),req.query).filter().sort().limitField().paginate();
+        
+            //API Features is a class that we have importd containing filter,sort etc
+            //EXECUTE
+           
+     //Here we create a new object of the API features class in there we are passing a query object and a query string comming from express
+     //Then each of the above 4 methods we use to manipulate the query 
+     //And by the end we simply await for the query so that it can come with all the documents we have selected
+            const doc=await features.query
+            
+        res.status(200).json({
+            status:"success",        
+            data:{
+                data:doc
+            }
+        })
+    
+    })

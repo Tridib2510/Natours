@@ -12,25 +12,26 @@ exports.aliasTopTours=(req,res,next)=>{
 
 }
 
-exports.getAllTour=(async (req,res,next)=>{
-    const features=new APIFeatures(Tour.find(),req.query).filter().sort().limitField().paginate();
+// exports.getAllTour=(async (req,res,next)=>{
+//     const features=new APIFeatures(Tour.find(),req.query).filter().sort().limitField().paginate();
     
-        //API Features is a class that we have importd containing filter,sort etc
-        //EXECUTE
+//         //API Features is a class that we have importd containing filter,sort etc
+//         //EXECUTE
        
- //Here we create a new object of the API features class in there we are passing a query object and a query string comming from express
- //Then each of the above 4 methods we use to manipulate the query 
- //And by the end we simply await for the query so that it can come with all the documents we have selected
-        const tour=await features.query
+//  //Here we create a new object of the API features class in there we are passing a query object and a query string comming from express
+//  //Then each of the above 4 methods we use to manipulate the query 
+//  //And by the end we simply await for the query so that it can come with all the documents we have selected
+//         const tour=await features.query
         
-    res.status(200).json({
-        status:"success",        
-        data:{
-            tour:tour
-        }
-    })
+//     res.status(200).json({
+//         status:"success",        
+//         data:{
+//             tour:tour
+//         }
+//     })
 
-})
+// })
+exports.getAllTour=factory.getAll(Tour)
 
 // exports.deleteTour=catchAsync(async (req,res,next)=>{
   
@@ -48,49 +49,51 @@ exports.getAllTour=(async (req,res,next)=>{
 
 exports.deleteTour=factory.deleteOne(Tour)
 
-exports.getTour=catchAsync(async (req,res,next)=>{
+// exports.getTour=catchAsync(async (req,res,next)=>{
 
-//In Lect 153 we are going to use a process called populate in order to get accessed to the referenced tour guides whenever we query our certain tour
-//The result of that would look as if the data has already been embedded when infact it is in a completely different collection
-//The populate process always happens in a query
+// //In Lect 153 we are going to use a process called populate in order to get accessed to the referenced tour guides whenever we query our certain tour
+// //The result of that would look as if the data has already been embedded when infact it is in a completely different collection
+// //The populate process always happens in a query
 
-    const id=req.params.id*1
+//     const id=req.params.id*1
     
-    const tour=await Tour.findById(req.params.id).populate('reviews')//Here we virtually populate the reviews in the tour model
+//     const tour=await Tour.findById(req.params.id).populate('reviews')//Here we virtually populate the reviews in the tour model
 
    
 
 
 
 
-    // const tour=await Tour.findById(req.params.id).populate({
-    //     path:'guides',
-    //     select:'-__v -passwordChangedAt' //__v and passwordChangedAt will not be displaced '-' before the property name ins important
+//     // const tour=await Tour.findById(req.params.id).populate({
+//     //     path:'guides',
+//     //     select:'-__v -passwordChangedAt' //__v and passwordChangedAt will not be displaced '-' before the property name ins important
 
-    // }) 
+//     // }) 
 
-    //populate->To basically fill up the field called guides in our model which contains the reference with the actual data
+//     //populate->To basically fill up the field called guides in our model which contains the reference with the actual data
 
-    //This populate option is a fundamental tool when working with data in mongoose and when there are relationships between data
-    //Behind the scenes using popluate will create a new query so it might affect your performance
+//     //This populate option is a fundamental tool when working with data in mongoose and when there are relationships between data
+//     //Behind the scenes using popluate will create a new query so it might affect your performance
    
-        if(!tour){
+//         if(!tour){
           
-         return next(new AppError('Not found with that ID',404))
-         //we use return as we want to return the function immediately and
-         //not move on to the next line which would try to give 2 responses
-         //leading to error
-        }
-    console.log(req.params)
-    res.status(200).json({
-        status:"success",
-        data:{
-            tour
-        }
-    })
+//          return next(new AppError('Not found with that ID',404))
+//          //we use return as we want to return the function immediately and
+//          //not move on to the next line which would try to give 2 responses
+//          //leading to error
+//         }
+//     console.log(req.params)
+//     res.status(200).json({
+//         status:"success",
+//         data:{
+//             tour
+//         }
+//     })
     
    
-})
+// })
+exports.getTour=factory.getOne(Tour,{path:'reviews'})
+
 //Here the error comes up only when the ID specified donot matches the mongodb
 //ID type .If it matches then it show tour=null
 // exports.updateTour=catchAsync(async (req,res,next)=>{

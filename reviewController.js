@@ -5,23 +5,25 @@ const factory=require('./handlerFactory')//This is the handle factory
 
 
 
-exports.getAllReviews=catchAsync(async (req,res,next)=>{
-   //We are goig to check if there is a tourId and if there is then we are going to search for reviews where the tour=tourId
+// exports.getAllReviews=catchAsync(async (req,res,next)=>{
+//    //We are goig to check if there is a tourId and if there is then we are going to search for reviews where the tour=tourId
    
-   let filter={}
-   //If the filter object is empty then we are going to get all the reviews
-   if(req.params.tourId)filter={tour:req.params.tourId}
+//    let filter={}
+//    //If the filter object is empty then we are going to get all the reviews
+//    if(req.params.tourId)filter={tour:req.params.tourId}
     
-    const review=await Review.find(filter)
+//     const review=await Review.find(filter)
 
-    res.status(200).json({
-        status:'success',
-        results:review.length,
-        data:{
-            review
-        }
-    })
-})
+//     res.status(200).json({
+//         status:'success',
+//         results:review.length,
+//         data:{
+//             review
+//         }
+//     })
+// })
+
+exports.getAllReviews=factory.getAll(Review)
 
 // exports.createReview=catchAsync(async(req,res,next)=>{
     
@@ -45,9 +47,7 @@ exports.setTourUserIds=(req,res,next)=>{
     if(!req.body.user)req.body.user=req.user._id
     next()
 }
-
+exports.getReview=factory.getOne(Review)
 exports.createReview=factory.createOne(Review)
-
-
 exports.updateReview=factory.updateOne(Review)
 exports.deleteReview=factory.deleteOne(Review)

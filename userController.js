@@ -62,30 +62,34 @@ exports.deleteMe=catchAsync(async (req,res,next)=>{
    //To solve this problem we are going to use the query middleware
 })
 
-exports.getAllUsers=catchAsync(async(req,res)=>{
-    console.log("Testing 1")
-    const user=await User.find()
-    res.status(200).json({
-        status:'success',
-       results:user.length,
-       data:{
-        user
-       }
-    })
+// exports.getAllUsers=catchAsync(async(req,res)=>{
+//     console.log("Testing 1")
+//     const user=await User.find()
+//     res.status(200).json({
+//         status:'success',
+//        results:user.length,
+//        data:{
+//         user
+//        }
+//     })
 
-})
-exports.getUser=(req,res)=>{
-    res.status(500).json({
-        status:'error',
-        message:'This route is not yet defined'
-    })
+// })
+exports.getAllUsers=factory.getAll(User)
 
-}
+// exports.getUser=(req,res)=>{
+//     res.status(500).json({
+//         status:'error',
+//         message:'This route is not yet defined'
+//     })
+
+// }
+
+exports.getUser=factory.getOne(User)
 
 exports.createUser=(req,res)=>{
     res.status(500).json({
         status:'error',
-        message:'This route is not yet defined'
+        message:'This route is not yet defined !Please use /sigup instead'
     })
 }
 
